@@ -82,6 +82,9 @@
             img_binary = base64.b64decode(my_input[0].src[23:])
             img_b64 = rog_print(img_binary)
             my_input[0].src='data:image/jpeg;base64,' + img_b64
+
+        gamma22LUT = np.array([pow(x/255.0 , 2.2) for x in range(256)],dtype=np.float32) #ガンマ解除用LUT
+        a=[10.0933873523,5.0135366692,-0.1105581243,0.0005368424,-0.0000007456]
         
         def rog_print(path):
             jpg = np.frombuffer(path,dtype=np.uint8)
@@ -89,16 +92,18 @@
 
             x,y,c = np.shape(color_img)
 
-            gamma22LUT = np.array([pow(x/255.0 , 2.2) for x in range(256)],dtype=np.float32) #ガンマ解除用LUT
-
             deg_img = cv.LUT(color_img, gamma22LUT)
             cvt_img = cv.cvtColor(deg_img, cv.COLOR_BGR2GRAY)
             gray_img =pow(cvt_img,1.0/2.2) * 255
     
             HSV_img = cv.cvtColor(color_img, cv.COLOR_BGR2HSV).astype(np.float32)
     
-            mask_img = ((HSV_img[:,:,0] * 2 <= 16) | (HSV_img[:,:,0] * 2 >= 330)) & (HSV_img[:,:,1] * (100.0/255.0) >= 15) & (HSV_img[:,:,2] * (100.0/255.0) >= 15)
+            SV_threshold = np.zeros((x,y))
+            for i,v in enumerate(a):
+                SV_threshold = SV_threshold + v*np.power(HSV_img[:,:,0],i)
     
+            mask_img = ((HSV_img[:,:,0] * 2 <= 30) | (HSV_img[:,:,0] * 2 >= 330)) & (HSV_img[:,:,1] * (100.0/255.0) >= SV_threshold) & (HSV_img[:,:,2] * (100.0/255.0) >= SV_threshold)
+        
             out_img = np.zeros((x,y,c))
             out_img[:,:,:] = ((~mask_img) * gray_img)[:,:,None] + color_img[:,:,:] * mask_img[:,:,None]
     
