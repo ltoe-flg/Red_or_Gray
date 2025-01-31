@@ -1,4 +1,4 @@
-# Exif print  
+# Red or Gray
 赤色以外をグレースケール化します  
 こちらへアクセスしてください  
 https://ltoe-flg.github.io/Red_or_Gray/Red_or_Gray.html  
