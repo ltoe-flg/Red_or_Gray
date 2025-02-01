@@ -98,13 +98,13 @@
     
             HSV_img = cv.cvtColor(color_img, cv.COLOR_BGR2HSV).astype(np.float32)
     
-            SV_threshold = np.zeros((x,y))
+            SV_threshold = np.zeros((x,y),dtype=np.float32)
             for i,v in enumerate(a):
                 SV_threshold = SV_threshold + v*np.power(HSV_img[:,:,0],i)
-    
+
             mask_img = ((HSV_img[:,:,0] * 2 <= 30) | (HSV_img[:,:,0] * 2 >= 330)) & (HSV_img[:,:,1] * (100.0/255.0) >= SV_threshold) & (HSV_img[:,:,2] * (100.0/255.0) >= SV_threshold)
         
-            out_img = np.zeros((x,y,c))
+            out_img = np.zeros((x,y,c),dtype=np.uint8)
             out_img[:,:,:] = ((~mask_img) * gray_img)[:,:,None] + color_img[:,:,:] * mask_img[:,:,None]
     
             img = out_img.astype(np.uint8)
