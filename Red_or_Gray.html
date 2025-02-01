@@ -95,6 +95,8 @@
             deg_img = cv.LUT(color_img, gamma22LUT)
             cvt_img = cv.cvtColor(deg_img, cv.COLOR_BGR2GRAY)
             gray_img =pow(cvt_img,1.0/2.2) * 255
+            del deg_img
+            del cvt_img
     
             HSV_img = cv.cvtColor(color_img, cv.COLOR_BGR2HSV).astype(np.float32)
     
@@ -107,10 +109,8 @@
             out_img = np.zeros((x,y,c),dtype=np.uint8)
             out_img[:,:,:] = ((~mask_img) * gray_img)[:,:,None] + color_img[:,:,:] * mask_img[:,:,None]
     
-            img = out_img.astype(np.uint8)
-    
             encord_param = [int(cv.IMWRITE_JPEG_QUALITY),98]
-            retval, buf = cv.imencode('.jpg', img, encord_param)
+            retval, buf = cv.imencode('.jpg', out_img, encord_param)
             img_str = base64.b64encode(buf).decode('ascii')
             return img_str
     </py-script>
